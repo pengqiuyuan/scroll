@@ -6,9 +6,10 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/ry_scroll?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true
+                url: jdbc:mysql://10.46.188.60:9998/ry_scroll?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true
                 username: root
-                password: 
+                password: pqy13986883329P
+                
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
