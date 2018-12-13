@@ -7,10 +7,10 @@ ruoyi:
   # 版权年份
   copyrightYear: 2018
   # 文件上传路径
-  profile: /Users/admin/Downloads/profile/
+  profile: /home/idatage/pqy/oss/profile/
   # 获取ip地址开关
   addressEnabled: true
-  filePath: /Volumes/HD/
+  filePath: /home/idatage/pqy/oss/
 
 # 开发环境配置
 server:
