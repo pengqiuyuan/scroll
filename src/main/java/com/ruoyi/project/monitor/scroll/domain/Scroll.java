@@ -143,6 +143,7 @@ public class Scroll extends BaseEntity
             .append("endDate", getEndDate())
             .append("scrollGroup", getScrollGroup())
             .append("scrollGroup", getScrollGroup())
+            .append("status", getStatus())
             .append("url", getUrl())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

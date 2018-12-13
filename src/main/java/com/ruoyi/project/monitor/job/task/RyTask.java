@@ -73,20 +73,53 @@ public class RyTask
 		}
     }
     
-    public void ryNoParams()
+    public void ryNoParamsByScroll()
     {
     	Scroll scro = new Scroll();
     	scro.setScrollGroup("压缩");
     	scro.setStatus("0");
     	List<Scroll> scrolls = scrollService.selectScrollList(scro);
     	if(scrolls.size() == 0){
-    		System.out.println("没有需要压缩的任务");
     		return;
+    	}else{
+    		scroll();
     	}
-    	Scroll scroll = scrolls.get(0);
+    }
+    
+    /**
+     * 模拟测试
+     */
+    public void scroll(){
+		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
+		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
+		if(scroll==null || !scroll.getStatus().equals("0")){
+			return;
+		}
     	scroll.setStatus("1");
     	scrollService.updateScroll(scroll);
-    	 
+    	System.out.println("获取 incrscroll 开始压缩任务：" + scrollId);
+    	try {
+    		System.out.println("sleep 10秒 进行中....");
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    	
+		scroll.setStatus("2");
+    	scrollService.updateScroll(scroll);
+    }
+    
+    
+    public void scroll1(){
+		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
+		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
+		if(scroll==null || !scroll.getStatus().equals("0")){
+			return;
+		}
+    	scroll.setStatus("1");
+    	scrollService.updateScroll(scroll);
+    	System.out.println("获取 incrscroll 开始压缩任务：" + scrollId);
+    	
     	OSSClient ossClient = OSSClientUtil.getInstance().getClient();
     	String fileName = scroll.getStartDate()+"_"+scroll.getEndDate();
     	filePath = filePath + fileName;
