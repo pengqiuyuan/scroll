@@ -24,7 +24,7 @@ public class ESRestClientHelper {
 	
 	private static ESRestClientHelper instance;
 	
-	private static final String ES_IP = "10.27.74.109";
+	private static final String ES_IP = "59.110.0.112";
 	
 	private static final Integer ES_PORT = Integer.valueOf(9999);
 	

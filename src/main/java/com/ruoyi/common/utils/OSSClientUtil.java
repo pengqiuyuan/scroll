@@ -9,7 +9,7 @@ public class OSSClientUtil {
 	
 	private static OSSClientUtil instance;
 	
-	private static final String endpoint = "https://oss-cn-beijing-internal.aliyuncs.com";
+	private static final String endpoint = "https://oss-cn-beijing.aliyuncs.com";
 	
 	private static final String accessKeyId = "LTAIARWAKGUIqkn6";
 	
