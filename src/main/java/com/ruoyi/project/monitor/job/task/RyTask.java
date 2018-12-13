@@ -89,7 +89,7 @@ public class RyTask
     /**
      * 模拟测试
      */
-    public void scroll(){
+    public void scrollTest(){
 		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
 		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
@@ -110,7 +110,7 @@ public class RyTask
     }
     
     
-    public void scroll1(){
+    public void scroll(){
 		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
 		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
