@@ -18,7 +18,7 @@ server:
   port: 8081
   servlet:
     # 项目contextPath
-    context-path: /
+    context-path: /scroll
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
