@@ -57,7 +57,7 @@ public class RyTask
     private IUserService userService;
     
     @Value("${ruoyi.filePath}")
-	public String filePath;
+	public String fileP;
 	
     public void ryParams(String params)
     {
@@ -86,30 +86,6 @@ public class RyTask
     	}
     }
     
-    /**
-     * 模拟测试
-     */
-    public void scrollTest(){
-		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
-		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
-		if(scroll==null || !scroll.getStatus().equals("0")){
-			return;
-		}
-    	scroll.setStatus("1");
-    	scrollService.updateScroll(scroll);
-    	System.out.println("获取 incrscroll 开始压缩任务：" + scrollId);
-    	try {
-    		System.out.println("sleep 10秒 进行中....");
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-    	
-		scroll.setStatus("2");
-    	scrollService.updateScroll(scroll);
-    }
-    
-    
     public void scroll(){
 		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
 		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
@@ -122,7 +98,7 @@ public class RyTask
     	
     	OSSClient ossClient = OSSClientUtil.getInstance().getClient();
     	String fileName = scroll.getStartDate()+"_"+scroll.getEndDate();
-    	filePath = filePath + fileName;
+    	String filePath = fileP + fileName;
     	try {
     		System.out.println("执行无参方法");
 			getWeiboArticlesSorted(scroll.getStartDate()+" 00:00:00", scroll.getEndDate()+" 00:00:00",filePath);
@@ -294,4 +270,27 @@ public class RyTask
         return map;
     }
     
+    
+    /**
+     * 模拟测试
+     */
+    public void scrollTest(){
+		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
+		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
+		if(scroll==null || !scroll.getStatus().equals("0")){
+			return;
+		}
+    	scroll.setStatus("1");
+    	scrollService.updateScroll(scroll);
+    	System.out.println("获取 incrscroll 开始压缩任务：" + scrollId);
+    	try {
+    		System.out.println("sleep 10秒 进行中....");
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    	
+		scroll.setStatus("2");
+    	scrollService.updateScroll(scroll);
+    }
 }
