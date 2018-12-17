@@ -1,4 +1,4 @@
-package com.ruoyi.project.monitor.scroll.service;
+package com.ruoyi.project.monitor.weixinScroll.service;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -21,9 +22,9 @@ import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.monitor.scroll.mapper.ScrollMapper;
-import com.ruoyi.project.monitor.scroll.domain.Scroll;
-import com.ruoyi.project.monitor.scroll.service.IScrollService;
+import com.ruoyi.project.monitor.weixinScroll.mapper.WeixinScrollMapper;
+import com.ruoyi.project.monitor.weixinScroll.domain.WeixinScroll;
+import com.ruoyi.project.monitor.weixinScroll.service.IWeixinScrollService;
 import com.ruoyi.project.system.user.service.IUserService;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -41,10 +42,10 @@ import com.ruoyi.common.utils.security.ShiroUtils;
  * 索引任务 服务层实现
  * 
  * @author ruoyi
- * @date 2018-12-12
+ * @date 2018-12-17
  */
 @Service
-public class ScrollServiceImpl implements IScrollService 
+public class WeixinScrollServiceImpl implements IWeixinScrollService 
 {
 	
     @Autowired
@@ -52,9 +53,11 @@ public class ScrollServiceImpl implements IScrollService
     
     @Value("${ruoyi.filePath}")
 	public String fileP;
+    
+	public static final SimpleDateFormat s =   new SimpleDateFormat("yyyyMMddHHmmssSSS" ); 
 	
 	@Autowired
-	private ScrollMapper scrollMapper;
+	private WeixinScrollMapper weixinScrollMapper;
 
 	/**
      * 查询索引任务信息
@@ -63,53 +66,53 @@ public class ScrollServiceImpl implements IScrollService
      * @return 索引任务信息
      */
     @Override
-	public Scroll selectScrollById(Integer scrollId)
+	public WeixinScroll selectWeixinScrollById(Integer scrollId)
 	{
-	    return scrollMapper.selectScrollById(scrollId);
+	    return weixinScrollMapper.selectWeixinScrollById(scrollId);
 	}
 	
 	/**
      * 查询索引任务列表
      * 
-     * @param scroll 索引任务信息
+     * @param weixinScroll 索引任务信息
      * @return 索引任务集合
      */
 	@Override
-	public List<Scroll> selectScrollList(Scroll scroll)
+	public List<WeixinScroll> selectWeixinScrollList(WeixinScroll weixinScroll)
 	{
-	    return scrollMapper.selectScrollList(scroll);
+	    return weixinScrollMapper.selectWeixinScrollList(weixinScroll);
 	}
 	
     /**
      * 新增索引任务
      * 
-     * @param scroll 索引任务信息
+     * @param weixinScroll 索引任务信息
      * @return 结果
      */
 	@Override
-	public int insertScroll(Scroll scroll)
+	public int insertWeixinScroll(WeixinScroll weixinScroll)
 	{
 		try {
-			scroll.setCreateBy(ShiroUtils.getLoginName());
+			weixinScroll.setCreateBy(ShiroUtils.getLoginName());
 		} catch (Exception e) {
 		}
-	    return scrollMapper.insertScroll(scroll);
+	    return weixinScrollMapper.insertWeixinScroll(weixinScroll);
 	}
 	
 	/**
      * 修改索引任务
      * 
-     * @param scroll 索引任务信息
+     * @param weixinScroll 索引任务信息
      * @return 结果
      */
 	@Override
-	public int updateScroll(Scroll scroll)
+	public int updateWeixinScroll(WeixinScroll weixinScroll)
 	{
 		try {
-			scroll.setUpdateBy(ShiroUtils.getLoginName());
+			weixinScroll.setUpdateBy(ShiroUtils.getLoginName());
 		} catch (Exception e) {
 		}
-	    return scrollMapper.updateScroll(scroll);
+	    return weixinScrollMapper.updateWeixinScroll(weixinScroll);
 	}
 
 	/**
@@ -119,27 +122,27 @@ public class ScrollServiceImpl implements IScrollService
      * @return 结果
      */
 	@Override
-	public int deleteScrollByIds(String ids)
+	public int deleteWeixinScrollByIds(String ids)
 	{
-		return scrollMapper.deleteScrollByIds(Convert.toStrArray(ids));
+		return weixinScrollMapper.deleteWeixinScrollByIds(Convert.toStrArray(ids));
 	}
-
+	
     public void scroll(){
-		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weibo_scroll");
-		Scroll scroll = selectScrollById(scrollId.intValue());
+		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weixin_scroll");
+		WeixinScroll scroll = selectWeixinScrollById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
 			return;
 		}
     	scroll.setStatus("1");
-    	updateScroll(scroll);
-    	System.out.println("获取 incr_weibo_scroll 开始压缩任务：" + scrollId);
+    	updateWeixinScroll(scroll);
+    	System.out.println("获取 incr_weixin_scroll 开始压缩任务：" + scrollId);
     	
     	OSSClient ossClient = OSSClientUtil.getInstance().getClient();
-    	String fileName = scroll.getStartDate()+"_"+scroll.getEndDate();
+    	String fileName = "weixin_"+scroll.getStartDate()+"_"+scroll.getEndDate()+"_"+s.format(new Date());
     	String filePath = fileP + fileName;
     	try {
     		System.out.println("执行无参方法");
-			getWeiboArticlesSorted(scroll.getStartDate()+" 00:00:00", scroll.getEndDate()+" 00:00:00",filePath);
+    		getWeixinArticlesSorted(scroll.getStartDate()+" 00:00:00", scroll.getEndDate()+" 00:00:00",filePath);
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		}
@@ -166,11 +169,10 @@ public class ScrollServiceImpl implements IScrollService
 		
 		scroll.setStatus("2");
 		scroll.setUrl(url.toString());
-    	updateScroll(scroll);
+    	updateWeixinScroll(scroll);
     }
     
     /**
-     * 带排序的微博原文导出
      * @param startDate
      * @param endDate
      * @param keywords
@@ -182,7 +184,7 @@ public class ScrollServiceImpl implements IScrollService
      * @throws IOException 
      * @throws ParseException 
      */
-    public void getWeiboArticlesSorted(String startDate, String endDate,String filePath) throws ParseException, IOException {
+    public void getWeixinArticlesSorted(String startDate, String endDate,String filePath) throws ParseException, IOException {
         String scrollSize = "10000";
         HttpEntity entity = new NStringEntity(""
                 + "{"
@@ -190,7 +192,7 @@ public class ScrollServiceImpl implements IScrollService
                 + 		"\"bool\": {"
                 + 			"\"filter\": [{"
                 +			 	"\"range\": {"
-                + 					"\"published_at\": {"
+                + 					"\"last_modified_at\": {"
                 + 						"\"gte\": \""+startDate+"\","
                 + 						"\"lte\": \""+endDate+"\","
                 +                       "\"format\": \"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis\","
@@ -202,12 +204,12 @@ public class ScrollServiceImpl implements IScrollService
                 + 	"},"
                 + 	"\"size\": "+scrollSize+","
                 +    "\"sort\" : ["
-                +       "{\"published_at\" : {\"order\" : \"asc\"}}"
+                +       "{\"last_modified_at\" : {\"order\" : \"asc\"}}"
                 +    "]"
                 + "}", ContentType.APPLICATION_JSON);
         System.out.println(EntityUtils.toString(entity));
         try {
-            this.GetScrollList("weibo_articles_and_weiboers","weibo_articles_and_weiboer", entity, scrollSize,filePath);
+            this.GetScrollList("weixin_articles_and_weixiners","weixin_articles_and_weixiner", entity, scrollSize,filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }

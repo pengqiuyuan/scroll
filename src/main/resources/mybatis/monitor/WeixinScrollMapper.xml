@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.project.monitor.scroll.mapper.ScrollMapper">
+<mapper namespace="com.ruoyi.project.monitor.weixinScroll.mapper.WeixinScrollMapper">
     
-    <resultMap type="Scroll" id="ScrollResult">
+    <resultMap type="WeixinScroll" id="WeixinScrollResult">
         <result property="scrollId"    column="scroll_id"    />
         <result property="startDate"    column="start_date"    />
         <result property="endDate"    column="end_date"    />
@@ -18,12 +18,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
     </resultMap>
 	
-	<sql id="selectScrollVo">
-        select scroll_id, start_date, end_date, scroll_group, url,status, create_by, create_time, update_by, update_time, remark from sys_weibo_scroll
+	<sql id="selectWeixinScrollVo">
+        select scroll_id, start_date, end_date, scroll_group, url, status, create_by, create_time, update_by, update_time, remark from sys_weixin_scroll
     </sql>
 	
-    <select id="selectScrollList" parameterType="Scroll" resultMap="ScrollResult">
-        <include refid="selectScrollVo"/>
+    <select id="selectWeixinScrollList" parameterType="WeixinScroll" resultMap="WeixinScrollResult">
+        <include refid="selectWeixinScrollVo"/>
         <where>  
             <if test="scrollId != null "> and scroll_id = #{scrollId}</if>
              <if test="startDate != null  and startDate != '' "> and start_date = #{startDate}</if>
@@ -39,13 +39,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </where>
     </select>
     
-    <select id="selectScrollById" parameterType="Integer" resultMap="ScrollResult">
-        <include refid="selectScrollVo"/>
+    <select id="selectWeixinScrollById" parameterType="Integer" resultMap="WeixinScrollResult">
+        <include refid="selectWeixinScrollVo"/>
         where scroll_id = #{scrollId}
     </select>
         
-    <insert id="insertScroll" parameterType="Scroll">
-        insert into sys_weibo_scroll
+    <insert id="insertWeixinScroll" parameterType="WeixinScroll">
+        insert into sys_weixin_scroll
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="scrollId != null  ">scroll_id,</if>
 			<if test="startDate != null  and startDate != ''  ">start_date,</if>
@@ -70,8 +70,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 	 
-    <update id="updateScroll" parameterType="Scroll">
-        update sys_weibo_scroll
+    <update id="updateWeixinScroll" parameterType="WeixinScroll">
+        update sys_weixin_scroll
         <trim prefix="SET" suffixOverrides=",">
             <if test="startDate != null  and startDate != ''  ">start_date = #{startDate},</if>
             <if test="endDate != null  and endDate != ''  ">end_date = #{endDate},</if>
@@ -85,12 +85,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where scroll_id = #{scrollId}
     </update>
 
-	<delete id="deleteScrollById" parameterType="Integer">
-        delete from sys_weibo_scroll where scroll_id = #{scrollId}
+	<delete id="deleteWeixinScrollById" parameterType="Integer">
+        delete from sys_weixin_scroll where scroll_id = #{scrollId}
     </delete>
 	
-    <delete id="deleteScrollByIds" parameterType="String">
-        delete from sys_weibo_scroll where scroll_id in 
+    <delete id="deleteWeixinScrollByIds" parameterType="String">
+        delete from sys_weixin_scroll where scroll_id in 
         <foreach item="scrollId" collection="array" open="(" separator="," close=")">
             #{scrollId}
         </foreach>

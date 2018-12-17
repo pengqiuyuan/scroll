@@ -1,4 +1,4 @@
-package com.ruoyi.project.monitor.scroll.domain;
+package com.ruoyi.project.monitor.weixinScroll.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -6,12 +6,12 @@ import com.ruoyi.framework.web.domain.BaseEntity;
 import java.util.Date;
 
 /**
- * 索引任务表 sys_weibo_scroll
+ * 索引任务表 sys_weixin_scroll
  * 
  * @author ruoyi
- * @date 2018-12-12
+ * @date 2018-12-17
  */
-public class Scroll extends BaseEntity
+public class WeixinScroll extends BaseEntity
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -23,8 +23,9 @@ public class Scroll extends BaseEntity
 	private String endDate;
 	/** 任务组名（压缩、索引） */
 	private String scrollGroup;
+	/** 链接 */
 	private String url;
-	/** 状态（0未开始 1进行中 2已完成） */
+	/** 状态（0未开始 1进行中 2完成） */
 	private String status;
 	/** 创建者 */
 	private String createBy;
@@ -72,6 +73,15 @@ public class Scroll extends BaseEntity
 	public String getScrollGroup() 
 	{
 		return scrollGroup;
+	}
+	public void setUrl(String url) 
+	{
+		this.url = url;
+	}
+
+	public String getUrl() 
+	{
+		return url;
 	}
 	public void setStatus(String status) 
 	{
@@ -128,23 +138,14 @@ public class Scroll extends BaseEntity
 		return remark;
 	}
 
-    public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String toString() {
+    public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("scrollId", getScrollId())
             .append("startDate", getStartDate())
             .append("endDate", getEndDate())
             .append("scrollGroup", getScrollGroup())
-            .append("scrollGroup", getScrollGroup())
-            .append("status", getStatus())
             .append("url", getUrl())
+            .append("status", getStatus())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())
