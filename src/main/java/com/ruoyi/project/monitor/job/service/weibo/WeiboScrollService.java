@@ -48,7 +48,7 @@ public class WeiboScrollService
 	public String fileP;
     
     public void scroll(){
-		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
+		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weibo_scroll");
 		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
 			return;
