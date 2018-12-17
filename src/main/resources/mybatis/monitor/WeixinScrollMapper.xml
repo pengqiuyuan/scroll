@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.monitor.weixinScroll.mapper.WeixinScrollMapper">
+    
+    <resultMap type="WeixinScroll" id="WeixinScrollResult">
+        <result property="scrollId"    column="scroll_id"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="scrollGroup"    column="scroll_group"    />
+        <result property="url"    column="url"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+	
+	<sql id="selectWeixinScrollVo">
+        select scroll_id, start_date, end_date, scroll_group, url, status, create_by, create_time, update_by, update_time, remark from sys_weixin_scroll
+    </sql>
+	
+    <select id="selectWeixinScrollList" parameterType="WeixinScroll" resultMap="WeixinScrollResult">
+        <include refid="selectWeixinScrollVo"/>
+        <where>  
+            <if test="scrollId != null "> and scroll_id = #{scrollId}</if>
+             <if test="startDate != null  and startDate != '' "> and start_date = #{startDate}</if>
+             <if test="endDate != null  and endDate != '' "> and end_date = #{endDate}</if>
+             <if test="scrollGroup != null  and scrollGroup != '' "> and scroll_group = #{scrollGroup}</if>
+             <if test="url != null  and url != '' "> and url = #{url}</if>
+             <if test="status != null  and status != '' "> and status = #{status}</if>
+             <if test="createBy != null  and createBy != '' "> and create_by = #{createBy}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateBy != null  and updateBy != '' "> and update_by = #{updateBy}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+         </where>
+    </select>
+    
+    <select id="selectWeixinScrollById" parameterType="Integer" resultMap="WeixinScrollResult">
+        <include refid="selectWeixinScrollVo"/>
+        where scroll_id = #{scrollId}
+    </select>
+        
+    <insert id="insertWeixinScroll" parameterType="WeixinScroll">
+        insert into sys_weixin_scroll
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="scrollId != null  ">scroll_id,</if>
+			<if test="startDate != null  and startDate != ''  ">start_date,</if>
+			<if test="endDate != null  and endDate != ''  ">end_date,</if>
+			<if test="scrollGroup != null  and scrollGroup != ''  ">scroll_group,</if>
+			<if test="url != null  and url != ''  ">url,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="scrollId != null  ">#{scrollId},</if>
+			<if test="startDate != null  and startDate != ''  ">#{startDate},</if>
+			<if test="endDate != null  and endDate != ''  ">#{endDate},</if>
+			<if test="scrollGroup != null  and scrollGroup != ''  ">#{scrollGroup},</if>
+			<if test="url != null  and url != ''  ">#{url},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+         </trim>
+    </insert>
+	 
+    <update id="updateWeixinScroll" parameterType="WeixinScroll">
+        update sys_weixin_scroll
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="startDate != null  and startDate != ''  ">start_date = #{startDate},</if>
+            <if test="endDate != null  and endDate != ''  ">end_date = #{endDate},</if>
+            <if test="scrollGroup != null  and scrollGroup != ''  ">scroll_group = #{scrollGroup},</if>
+            <if test="url != null  and url != ''  ">url = #{url},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </trim>
+        where scroll_id = #{scrollId}
+    </update>
+
+	<delete id="deleteWeixinScrollById" parameterType="Integer">
+        delete from sys_weixin_scroll where scroll_id = #{scrollId}
+    </delete>
+	
+    <delete id="deleteWeixinScrollByIds" parameterType="String">
+        delete from sys_weixin_scroll where scroll_id in 
+        <foreach item="scrollId" collection="array" open="(" separator="," close=")">
+            #{scrollId}
+        </foreach>
+    </delete>
+    
+</mapper>
