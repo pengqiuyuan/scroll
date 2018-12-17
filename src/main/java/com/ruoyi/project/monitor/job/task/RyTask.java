@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ruoyi.common.utils.RedisUtil;
-import com.ruoyi.project.monitor.job.service.weibo.WeiboScrollService;
 import com.ruoyi.project.monitor.scroll.domain.Scroll;
 import com.ruoyi.project.monitor.scroll.service.IScrollService;
+import com.ruoyi.project.monitor.weixinScroll.domain.WeixinScroll;
+import com.ruoyi.project.monitor.weixinScroll.service.IWeixinScrollService;
 
 
 /**
@@ -23,11 +24,11 @@ public class RyTask
 	public static final SimpleDateFormat s =   new SimpleDateFormat("yyyyMMddHHmmssSSS" ); 
 	
 	@Autowired
-	private IScrollService scrollService;
+	private IScrollService weiboScrollService;
 	
 	@Autowired
-	private WeiboScrollService weiboScrollService;
-    	
+	private IWeixinScrollService weixinScrollService;
+	
     public void ryParams(String params)
     {
     	System.out.println("执行有参方法：" + params);
@@ -47,12 +48,12 @@ public class RyTask
      */
     public void scrollTest(){
 		Long scrollId = RedisUtil.INSTANCE.sincr("incrscroll");
-		Scroll scroll = scrollService.selectScrollById(scrollId.intValue());
+		Scroll scroll = weiboScrollService.selectScrollById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
 			return;
 		}
     	scroll.setStatus("1");
-    	scrollService.updateScroll(scroll);
+    	weiboScrollService.updateScroll(scroll);
     	System.out.println("获取 incrscroll 开始压缩任务：" + scrollId);
     	try {
     		System.out.println("sleep 10秒 进行中....");
@@ -62,7 +63,7 @@ public class RyTask
 		}
     	
 		scroll.setStatus("2");
-    	scrollService.updateScroll(scroll);
+		weiboScrollService.updateScroll(scroll);
     }
     
     
@@ -71,11 +72,24 @@ public class RyTask
     	Scroll scro = new Scroll();
     	scro.setScrollGroup("压缩");
     	scro.setStatus("0");
-    	List<Scroll> scrolls = scrollService.selectScrollList(scro);
+    	List<Scroll> scrolls = weiboScrollService.selectScrollList(scro);
     	if(scrolls.size() == 0){
     		return;
     	}else{
     		weiboScrollService.scroll();
+    	}
+    }
+    
+    public void ryNoParamsByWeixinScroll()
+    {
+    	WeixinScroll scro = new WeixinScroll();
+    	scro.setScrollGroup("压缩");
+    	scro.setStatus("0");
+    	List<WeixinScroll> scrolls = weixinScrollService.selectWeixinScrollList(scro);
+    	if(scrolls.size() == 0){
+    		return;
+    	}else{
+    		weixinScrollService.scroll();
     	}
     }
 }

@@ -51,4 +51,6 @@ public interface IScrollService
      */
 	public int deleteScrollByIds(String ids);
 	
+	public void scroll();
+	
 }

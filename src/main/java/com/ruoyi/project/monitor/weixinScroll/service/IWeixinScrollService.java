@@ -51,4 +51,5 @@ public interface IWeixinScrollService
      */
 	public int deleteWeixinScrollByIds(String ids);
 	
+	public void scroll();
 }
