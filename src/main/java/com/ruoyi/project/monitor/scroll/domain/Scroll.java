@@ -6,7 +6,7 @@ import com.ruoyi.framework.web.domain.BaseEntity;
 import java.util.Date;
 
 /**
- * 索引任务表 sys_scroll
+ * 索引任务表 sys_weibo_scroll
  * 
  * @author ruoyi
  * @date 2018-12-12

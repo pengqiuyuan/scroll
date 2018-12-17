@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectScrollVo">
-        select scroll_id, start_date, end_date, scroll_group, url,status, create_by, create_time, update_by, update_time, remark from sys_scroll
+        select scroll_id, start_date, end_date, scroll_group, url,status, create_by, create_time, update_by, update_time, remark from sys_weibo_scroll
     </sql>
 	
     <select id="selectScrollList" parameterType="Scroll" resultMap="ScrollResult">
@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
         
     <insert id="insertScroll" parameterType="Scroll">
-        insert into sys_scroll
+        insert into sys_weibo_scroll
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="scrollId != null  ">scroll_id,</if>
 			<if test="startDate != null  and startDate != ''  ">start_date,</if>
@@ -71,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 	 
     <update id="updateScroll" parameterType="Scroll">
-        update sys_scroll
+        update sys_weibo_scroll
         <trim prefix="SET" suffixOverrides=",">
             <if test="startDate != null  and startDate != ''  ">start_date = #{startDate},</if>
             <if test="endDate != null  and endDate != ''  ">end_date = #{endDate},</if>
@@ -86,11 +86,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
 	<delete id="deleteScrollById" parameterType="Integer">
-        delete from sys_scroll where scroll_id = #{scrollId}
+        delete from sys_weibo_scroll where scroll_id = #{scrollId}
     </delete>
 	
     <delete id="deleteScrollByIds" parameterType="String">
-        delete from sys_scroll where scroll_id in 
+        delete from sys_weibo_scroll where scroll_id in 
         <foreach item="scrollId" collection="array" open="(" separator="," close=")">
             #{scrollId}
         </foreach>
