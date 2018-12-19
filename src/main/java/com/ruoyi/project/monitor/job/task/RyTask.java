@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import com.ruoyi.common.utils.RedisUtil;
 import com.ruoyi.project.monitor.scroll.domain.Scroll;
 import com.ruoyi.project.monitor.scroll.service.IScrollService;
+import com.ruoyi.project.monitor.weiboDel.domain.WeiboDel;
+import com.ruoyi.project.monitor.weiboDel.service.IWeiboDelService;
+import com.ruoyi.project.monitor.weixinDel.service.IWeixinDelService;
 import com.ruoyi.project.monitor.weixinScroll.domain.WeixinScroll;
 import com.ruoyi.project.monitor.weixinScroll.service.IWeixinScrollService;
 
@@ -28,6 +31,12 @@ public class RyTask
 	
 	@Autowired
 	private IWeixinScrollService weixinScrollService;
+	
+	@Autowired
+	private IWeiboDelService weiboDelService;
+	
+	@Autowired
+	private IWeixinDelService weixinDelService;
 	
     public void ryParams(String params)
     {
@@ -90,6 +99,19 @@ public class RyTask
     		return;
     	}else{
     		weixinScrollService.scroll();
+    	}
+    }
+    
+    public void ryNoParamsByWeiboDel()
+    {
+    	WeiboDel del = new WeiboDel();
+    	del.setScrollGroup("删除");
+    	del.setStatus("0");
+    	List<WeiboDel> dels = weiboDelService.selectWeiboDelList(del);
+    	if(dels.size() == 0){
+    		return;
+    	}else{
+    		weiboDelService.del();
     	}
     }
 }
