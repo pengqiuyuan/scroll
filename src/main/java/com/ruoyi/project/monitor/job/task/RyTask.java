@@ -35,9 +35,6 @@ public class RyTask
 	@Autowired
 	private IWeiboDelService weiboDelService;
 	
-	@Autowired
-	private IWeixinDelService weixinDelService;
-	
     public void ryParams(String params)
     {
     	System.out.println("执行有参方法：" + params);
@@ -102,16 +99,18 @@ public class RyTask
     	}
     }
     
-    public void ryNoParamsByWeiboDel()
+    public void ryNoParamsByWeiboIndex()
     {
     	WeiboDel del = new WeiboDel();
-    	del.setScrollGroup("删除");
+    	del.setScrollGroup("索引");
     	del.setStatus("0");
     	List<WeiboDel> dels = weiboDelService.selectWeiboDelList(del);
     	if(dels.size() == 0){
     		return;
     	}else{
-    		weiboDelService.del();
+        	String index = "weibo_articles_and_weiboers";
+        	String type   = "weibo_articles_and_weiboer";
+    		weiboDelService.index(index,type);
     	}
     }
 }

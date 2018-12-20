@@ -27,13 +27,10 @@ public class TtestDel extends Tester {
 	@Autowired
 	private IWeiboDelService weiboDelService;
 	
-	@Autowired
-	private IWeixinDelService weixinDelService;
-	
-	//@Test
+	@Test
 	@Rollback(false)
 	public void test() throws Exception {
-		List<String> dates = days("2014-01-01", "2014-03-01");
+		List<String> dates = days("2017-01-01", "2017-01-10");
 		System.out.println(dates.size());
 		System.out.println(JSON.toJSONString(dates));
 		for (String string : dates) {
@@ -42,32 +39,11 @@ public class TtestDel extends Tester {
 			System.out.println(start.toString() +"  "  + end.toString());
 		    
 			WeiboDel scro = new WeiboDel();
-	    	scro.setScrollGroup("删除");
+	    	scro.setScrollGroup("索引");
 	    	scro.setStatus("0");
 	    	scro.setStartDate(start.toString());
 	    	scro.setEndDate(end.toString());
 	    	weiboDelService.insertWeiboDel(scro);
-		}
-	}
-	
-	
-	//@Test
-	@Rollback(false)
-	public void testWeixin() throws Exception {
-		List<String> dates = days("2014-01-01", "2017-01-01");
-		System.out.println(dates.size());
-		System.out.println(JSON.toJSONString(dates));
-		for (String string : dates) {
-			LocalDate start = LocalDate.parse(string);
-			LocalDate end = start.plusDays(1);
-			System.out.println(start.toString() +"  "  + end.toString());
-		    
-			WeixinDel scro = new WeixinDel();
-	    	scro.setScrollGroup("删除");
-	    	scro.setStatus("0");
-	    	scro.setStartDate(start.toString());
-	    	scro.setEndDate(end.toString());
-	    	weixinDelService.insertWeixinDel(scro);
 		}
 	}
 	
@@ -88,10 +64,10 @@ public class TtestDel extends Tester {
 		return totalDates;
 	}
 	
-	@Test
+	//@Test
 	public void test1() throws Exception {
-    	String startDate = "2014-01-11 00:00:00";
-    	String endDate   = "2014-01-13 00:00:00";
+    	String startDate = "2017-01-02 00:00:00";
+    	String endDate   = "2017-01-02 01:00:00";
         HttpEntity entity = new NStringEntity(""
                 + "{"
                 + 	"\"query\": {"

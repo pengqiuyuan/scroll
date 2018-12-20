@@ -55,7 +55,5 @@ public interface IWeiboDelService
      */
 	public int deleteWeiboDelByIds(String ids);
 	
-	public void del();
-	
-	public void getWeiboArticlesDel(String startDate, String endDate) throws ParseException, IOException;
+	public void index(String index, String type);
 }

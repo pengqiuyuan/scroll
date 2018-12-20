@@ -18,6 +18,7 @@ import com.ruoyi.project.monitor.weiboDel.domain.WeiboDel;
 import com.ruoyi.project.monitor.weiboDel.service.IWeiboDelService;
 import com.ruoyi.project.monitor.weixinScroll.domain.WeixinScroll;
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.common.utils.ESNewRestClientHelper;
 import com.ruoyi.common.utils.ESRestClientHelper;
 import com.ruoyi.common.utils.RedisUtil;
 import com.ruoyi.common.utils.security.ShiroUtils;
@@ -103,17 +104,17 @@ public class WeiboDelServiceImpl implements IWeiboDelService
 	}
 
 	@Override
-	public void del() {
-		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weibo_del");
+	public void index(String index, String type) {
+		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weibo_index");
 		WeiboDel scroll = selectWeiboDelById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
 			return;
 		}
     	scroll.setStatus("1");
     	updateWeiboDel(scroll);
-    	System.out.println("获取 incr_weibo_del 开始删除任务：" + scrollId);
+    	System.out.println("获取 incr_weibo_index 开始索引任务：" + scrollId);
     	try {
-    		getWeiboArticlesDel(scroll.getStartDate()+" 00:00:00", scroll.getEndDate()+" 00:00:00");
+    		getWeiboArticlesIndex(index,type,scroll.getStartDate(), scroll.getEndDate());
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
 		}
@@ -121,29 +122,44 @@ public class WeiboDelServiceImpl implements IWeiboDelService
 		updateWeiboDel(scroll);
 	}
 	
-    public void getWeiboArticlesDel(String startDate, String endDate) throws ParseException, IOException {
+    public void getWeiboArticlesIndex(String index, String type,String startDate, String endDate) throws ParseException, IOException {
         HttpEntity entity = new NStringEntity(""
                 + "{"
-                + 	"\"query\": {"
-                + 		"\"bool\": {"
-                + 			"\"filter\": [{"
-                +			 	"\"range\": {"
-                + 					"\"published_at\": {"
-                + 						"\"gte\": \""+startDate+"\","
-                + 						"\"lte\": \""+endDate+"\","
-                +                       "\"format\": \"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis\","
-                + 						"\"time_zone\": \"Asia/Shanghai\""
-                + 					"}"
+                + 		"\"source\": {"
+                + 			"\"remote\": {"
+                + 					"\"host\": \"http://10.28.51.165:9222\","
+                + 					"\"username\": \"idatage\","
+                + 					"\"password\": \"abc@123456\""
+                + 			"},"
+                + 			"\"index\": \""+index+"\","
+                + 			"\"type\": \""+type+"\","
+                + 			"\"query\": {"
+                + 				"\"bool\": {"
+                + 					"\"filter\": [{"
+                +			 			"\"range\": {"
+                + 							"\"published_at\": {"
+                + 								"\"gte\": \""+startDate+"\","
+                + 								"\"lte\": \""+endDate+"\","
+                +                       		"\"format\": \"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis\","
+                + 								"\"time_zone\": \"Asia/Shanghai\""
+                + 							"}"
+                + 						"}"
+                + 					"}]"
                 + 				"}"
-                + 			"}]"
+                + 			"},"
+                +   		"\"size\": 10000"
+                + 		"},"
+                + 		"\"dest\": {"
+                + 			"\"index\": \""+index+"\","
+                + 			"\"type\": \""+type+"\""
                 + 		"}"
-                + 	"}"
                 + "}", ContentType.APPLICATION_JSON);
         System.out.println(EntityUtils.toString(entity));
-        RestClient restClient = ESRestClientHelper.getInstance().getClient();
+        //新集群发送请求 ESNewRestClientHelper
+        RestClient restClient = ESNewRestClientHelper.getInstance().getClient();
 		Response indexResponse = restClient.performRequest(
 		        "POST",
-		        "/weibo_articles_and_weiboers/weibo_articles_and_weiboer/_delete_by_query?conflicts=proceed&scroll_size=10000&refresh",
+		        "/_reindex",
 		        Collections.singletonMap("pretty", "true"),
 		        entity);
 		System.out.println(startDate + " " + endDate + "  "+EntityUtils.toString(indexResponse.getEntity()));
