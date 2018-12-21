@@ -55,5 +55,9 @@ public interface IWeiboDelService
      */
 	public int deleteWeiboDelByIds(String ids);
 	
-	public void index(String index, String type);
+	public void weiboIndex(String index, String type);
+	
+	public void weixinIndex(String index, String type);
+	
+	public void toutiaoIndex(String index, String type);
 }

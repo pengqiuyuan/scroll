@@ -110,7 +110,37 @@ public class RyTask
     	}else{
         	String index = "weibo_articles_and_weiboers";
         	String type   = "weibo_articles_and_weiboer";
-    		weiboDelService.index(index,type);
+    		weiboDelService.weiboIndex(index,type);
+    	}
+    }
+    
+    public void ryNoParamsByWeixinIndex()
+    {
+    	WeiboDel del = new WeiboDel();
+    	del.setScrollGroup("索引");
+    	del.setStatus("0");
+    	List<WeiboDel> dels = weiboDelService.selectWeiboDelList(del);
+    	if(dels.size() == 0){
+    		return;
+    	}else{
+        	String index = "weixin_articles_and_weixiners";
+        	String type   = "weixin_articles_and_weixiner";
+    		weiboDelService.weixinIndex(index,type);
+    	}
+    }
+    
+    public void ryNoParamsByToutiaoIndex()
+    {
+    	WeiboDel del = new WeiboDel();
+    	del.setScrollGroup("索引");
+    	del.setStatus("0");
+    	List<WeiboDel> dels = weiboDelService.selectWeiboDelList(del);
+    	if(dels.size() == 0){
+    		return;
+    	}else{
+        	String index = "toutiao_articles_and_users";
+        	String type   = "toutiao_articles_and_users";
+    		weiboDelService.toutiaoIndex(index,type);
     	}
     }
 }

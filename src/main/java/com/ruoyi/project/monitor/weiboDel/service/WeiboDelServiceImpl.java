@@ -104,7 +104,7 @@ public class WeiboDelServiceImpl implements IWeiboDelService
 	}
 
 	@Override
-	public void index(String index, String type) {
+	public void weiboIndex(String index, String type) {
 		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weibo_index");
 		WeiboDel scroll = selectWeiboDelById(scrollId.intValue());
 		if(scroll==null || !scroll.getStatus().equals("0")){
@@ -123,6 +123,133 @@ public class WeiboDelServiceImpl implements IWeiboDelService
 	}
 	
     public void getWeiboArticlesIndex(String index, String type,String startDate, String endDate) throws ParseException, IOException {
+        HttpEntity entity = new NStringEntity(""
+                + "{"
+                + 		"\"source\": {"
+                + 			"\"remote\": {"
+                + 					"\"host\": \"http://10.28.51.165:9222\","
+                + 					"\"username\": \"idatage\","
+                + 					"\"password\": \"abc@123456\""
+                + 			"},"
+                + 			"\"index\": \""+index+"\","
+                + 			"\"type\": \""+type+"\","
+                + 			"\"query\": {"
+                + 				"\"bool\": {"
+                + 					"\"filter\": [{"
+                +			 			"\"range\": {"
+                + 							"\"published_at\": {"
+                + 								"\"gte\": \""+startDate+"\","
+                + 								"\"lte\": \""+endDate+"\","
+                +                       		"\"format\": \"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis\","
+                + 								"\"time_zone\": \"Asia/Shanghai\""
+                + 							"}"
+                + 						"}"
+                + 					"}]"
+                + 				"}"
+                + 			"},"
+                +   		"\"size\": 10000"
+                + 		"},"
+                + 		"\"dest\": {"
+                + 			"\"index\": \""+index+"\","
+                + 			"\"type\": \""+type+"\""
+                + 		"}"
+                + "}", ContentType.APPLICATION_JSON);
+        System.out.println(EntityUtils.toString(entity));
+        //新集群发送请求 ESNewRestClientHelper
+        RestClient restClient = ESNewRestClientHelper.getInstance().getClient();
+		Response indexResponse = restClient.performRequest(
+		        "POST",
+		        "/_reindex",
+		        Collections.singletonMap("pretty", "true"),
+		        entity);
+		System.out.println(startDate + " " + endDate + "  "+EntityUtils.toString(indexResponse.getEntity()));
+    }
+    
+    
+    
+	@Override
+	public void weixinIndex(String index, String type) {
+		Long scrollId = RedisUtil.INSTANCE.sincr("incr_weixin_index");
+		WeiboDel scroll = selectWeiboDelById(scrollId.intValue());
+		if(scroll==null || !scroll.getStatus().equals("0")){
+			return;
+		}
+    	scroll.setStatus("1");
+    	updateWeiboDel(scroll);
+    	System.out.println("获取 incr_weixin_index 开始索引任务：" + scrollId);
+    	try {
+    		getWeixinArticlesIndex(index,type,scroll.getStartDate(), scroll.getEndDate());
+		} catch (ParseException | IOException e) {
+			e.printStackTrace();
+		}
+		scroll.setStatus("2");
+		updateWeiboDel(scroll);
+	}
+	
+    public void getWeixinArticlesIndex(String index, String type,String startDate, String endDate) throws ParseException, IOException {
+        HttpEntity entity = new NStringEntity(""
+                + "{"
+                + 		"\"source\": {"
+                + 			"\"remote\": {"
+                + 					"\"host\": \"http://10.28.51.165:9222\","
+                + 					"\"username\": \"idatage\","
+                + 					"\"password\": \"abc@123456\""
+                + 			"},"
+                + 			"\"index\": \""+index+"\","
+                + 			"\"type\": \""+type+"\","
+                + 			"\"query\": {"
+                + 				"\"bool\": {"
+                + 					"\"filter\": [{"
+                +			 			"\"range\": {"
+                + 							"\"last_modified_at\": {"
+                + 								"\"gte\": \""+startDate+"\","
+                + 								"\"lte\": \""+endDate+"\","
+                +                       		"\"format\": \"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis\","
+                + 								"\"time_zone\": \"Asia/Shanghai\""
+                + 							"}"
+                + 						"}"
+                + 					"}]"
+                + 				"}"
+                + 			"},"
+                +   		"\"size\": 10000"
+                + 		"},"
+                + 		"\"dest\": {"
+                + 			"\"index\": \""+index+"\","
+                + 			"\"type\": \""+type+"\""
+                + 		"}"
+                + "}", ContentType.APPLICATION_JSON);
+        System.out.println(EntityUtils.toString(entity));
+        //新集群发送请求 ESNewRestClientHelper
+        RestClient restClient = ESNewRestClientHelper.getInstance().getClient();
+		Response indexResponse = restClient.performRequest(
+		        "POST",
+		        "/_reindex",
+		        Collections.singletonMap("pretty", "true"),
+		        entity);
+		System.out.println(startDate + " " + endDate + "  "+EntityUtils.toString(indexResponse.getEntity()));
+    }
+    
+    
+	@Override
+	public void toutiaoIndex(String index, String type) {
+		Long scrollId = RedisUtil.INSTANCE.sincr("incr_toutiao_index");
+		WeiboDel scroll = selectWeiboDelById(scrollId.intValue());
+		if(scroll==null || !scroll.getStatus().equals("0")){
+			return;
+		}
+    	scroll.setStatus("1");
+    	updateWeiboDel(scroll);
+    	System.out.println("获取 incr_toutiao_index 开始索引任务：" + scrollId);
+    	try {
+    		getToutiaoArticlesIndex(index,type,scroll.getStartDate(), scroll.getEndDate());
+		} catch (ParseException | IOException e) {
+			e.printStackTrace();
+		}
+		scroll.setStatus("2");
+		updateWeiboDel(scroll);
+	}
+	
+    public void getToutiaoArticlesIndex(String index, String type,String startDate, String endDate) throws ParseException, IOException {
         HttpEntity entity = new NStringEntity(""
                 + "{"
                 + 		"\"source\": {"
